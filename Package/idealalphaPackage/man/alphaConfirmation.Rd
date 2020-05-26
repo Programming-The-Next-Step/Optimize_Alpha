@@ -18,13 +18,13 @@ alphaConfirmation(
 \arguments{
 \item{n}{Number of participants per group.}
 
-\item{effsize}{Effect size corresponding to statistical test. D for t-test, r for correlation and f for anova.}
+\item{effsize}{Effect size corresponding to statistical test. D for t-test and f for anova.}
 
 \item{prior}{Prior probability of H1 being true.}
 
 \item{posttrue}{The posterior probability that is aimed for if the test is significant (should be higher than prior).}
 
-\item{test}{Kind of statistical test. Can be "t-test", "anova" and "correlation".}
+\item{test}{Kind of statistical test. Can be "t-test" and "anova".}
 
 \item{type}{Indicate whether it is a "one.sample", or "two.sample" test (for t-test only).}
 
@@ -39,6 +39,6 @@ A data frame with the alpha level, the  power, the expected correct change in be
 The user specifies the intended probability of the hypothesis after a significant test result and the alpha level is adjusted accordingly.
 }
 \examples{
-alphaConfirmation(100, 0.3, 0.2, 0.5, test = "correlation").
+alphaConfirmation(100, 0.3, 0.2, 0.5).
 
 }

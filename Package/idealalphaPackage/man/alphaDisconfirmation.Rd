@@ -18,13 +18,13 @@ alphaDisconfirmation(
 \arguments{
 \item{n}{Number of participants per group.}
 
-\item{effsize}{Effect size corresponding to statistical test. D for t-test, r for correlation and f for anova.}
+\item{effsize}{Effect size corresponding to statistical test. D for t-test and f for anova.}
 
 \item{prior}{Prior probability of H1 being true.}
 
 \item{postfalse}{The posterior probability that is aimed for if the test is not significant (should be higher than prior).}
 
-\item{test}{Kind of statistical test. Can be "t-test", "anova" and "correlation".}
+\item{test}{Kind of statistical test. Can be "t-test" and "anova".}
 
 \item{type}{Indicate whether it is a one.sample, or two.sample test (for t-test only).}
 
@@ -39,6 +39,6 @@ A data frame with the alpha level, the  power, the expected correct change in be
 The user specifies the intended probability of the hypothesis after a non-significant test result and the alpha level is adjusted accordingly.
 }
 \examples{
-alphaDisconfirmation(100, 0.3, 0.5, 0.2, test = "correlation").
+alphaDisconfirmation(100, 0.3, 0.5, 0.2, test = "anova").
 
 }
