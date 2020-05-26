@@ -2,8 +2,8 @@
 
 export(alphaConfirmation)
 export(alphaDisconfirmation)
-export(idealAlpha)
+export(idealalpha)
 export(information)
 export(postConfirm)
 export(postDisconfirm)
-export(probPower)
+export(probpower)
