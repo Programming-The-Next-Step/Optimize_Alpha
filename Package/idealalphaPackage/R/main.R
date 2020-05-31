@@ -115,6 +115,7 @@ idealAlpha <- function(n, effsize, prior, test = "t-test", type = "two.sample", 
   colnames(dmax) <- c("alpha", "power", "Learning", "Learning05")
   if(dmax$alpha > 0.99) stop("Hard to estimate alpha/power with so few participants/small effect size.
                                Consider increasing the sample size")
+  row.names(dmax) <- "Value:"
   return(dmax)
 }
 
@@ -181,6 +182,7 @@ alphaConfirmation <- function(n, effsize, prior, posttrue, test = "t-test", type
           warning("You have a lot of power, therefore, you might achieve
                   even higher probability than intended")
   }
+  row.names(d) <- "Value:"
   return(d)
 }
 
@@ -246,6 +248,7 @@ alphaDisconfirmation <- function(n, effsize, prior, postfalse, test = "t-test", 
           warning("You have a lot of power, therefore, you might achieve
                   even lower probability than intended")
   }
+  row.names(d) <- "Value:"
   return(d)
 }
 
@@ -294,7 +297,8 @@ probPower <- function(effsize, prior, postfalse, posttrue, test = "t-test", type
        ylab = "Expected Correct Change in Belief",
        xlab = "Signifcance Level",
        type = "l",
-       main = paste("Probability bas Power Analysis - PosteriorConfirmation:",posttrue, "  Posterior Disconfirmation:", postfalse) ,
+       main = paste("Probability bas Power Analysis for", posttrue, " probability
+       after significance and" ,postfalse, "after non-significance") ,
        xlim = c(0, 1),
        axes = F,
        ylim = c(0, round(maxinf + 0.005, digits = 2)))
@@ -303,6 +307,7 @@ probPower <- function(effsize, prior, postfalse, posttrue, test = "t-test", type
   axis(side = 2, at = c(seq(0, (maxinf + 0.01), 0.01)))
   axis(side = 1, at = c(seq(0, 1, 0.05)))
   mtext(side = 3, paste("Sample Size", i, " Alpha = ", round(d$alpha, digits = 2), " Power = ", round(d$power, digits = 2), "Learning =", round(d$info*100, digits = 2), "%"))
+  row.names(d) <- "Value:"
   return(d)
 }
 
