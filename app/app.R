@@ -19,7 +19,8 @@ ui <- dashboardPage(
             menuItem("Optimize Learning", tabName = "ideal", icon = icon("calculator")),
             menuItem("Posterior|Significance", tabName = "alphaC", icon = icon("calculator")),
             menuItem("Posterior|Non-Significance", tabName = "alphaD", icon = icon("calculator")),
-            menuItem("Probability Based Power Analysis", tabName = "PBPA", icon = icon("calculator"))
+            menuItem("Probability Based Power Analysis", tabName = "PBPA", icon = icon("calculator")),
+            menuItem("About", tabName = "about", icon = icon("info"))
             )
     ),
     dashboardBody(
@@ -39,10 +40,10 @@ ui <- dashboardPage(
                             
                             #Kind of statistical test. Can be "t-test", "anova" and "correlation".
                             
-                            selectInput("test", "Select Statistical Test", c("t-test" = "t-test","anova" = "anova")),
+                            selectInput("test", "Kind of Test", c("t-test" = "t-test","anova" = "anova")),
                             #Indicate whether it is a "one.sample", or "two.sample" test (for t-test only)
                             
-                            selectInput("type", "Within- or between-sample (for t-test)",
+                            selectInput("type", "Within- or Between-Sample (for t-test)",
                                         c("within" = "one.sample", "between" = "two.sample")),
                             #Indicate whether the alternative is "two.sided", "less" or "greater"
                             
@@ -77,10 +78,10 @@ ui <- dashboardPage(
                         
                         #Kind of statistical test. Can be "t-test", "anova" and "correlation".
                         
-                        selectInput("testC", "Select Statistical Test", c("t-test" = "t-test","anova" = "anova")),
+                        selectInput("testC", "Kind of Test", c("t-test" = "t-test","anova" = "anova")),
                         #Indicate whether it is a "one.sample", or "two.sample" test (for t-test only)
                         
-                        selectInput("typeC", "Within- or between-sample (for t-test)",
+                        selectInput("typeC", "Within- or Between-Sample (for t-test)",
                                     c("within" = "one.sample", "between" = "two.sample")),
                         #Indicate whether the alternative is "two.sided", "less" or "greater"
                         
@@ -114,10 +115,10 @@ ui <- dashboardPage(
                         
                         #Kind of statistical test. Can be "t-test", "anova" and "correlation".
                         
-                        selectInput("testD", "Select Statistical Test", c("t-test" = "t-test","anova" = "anova")),
+                        selectInput("testD", "Kind of Test", c("t-test" = "t-test","anova" = "anova")),
                         #Indicate whether it is a "one.sample", or "two.sample" test (for t-test only)
                         
-                        selectInput("typeD", "Within- or between-sample (for t-test)",
+                        selectInput("typeD", "Within- or Between-Sample (for t-test)",
                                     c("within" = "one.sample", "between" = "two.sample")),
                         #Indicate whether the alternative is "two.sided", "less" or "greater"
                         
@@ -151,10 +152,10 @@ ui <- dashboardPage(
                         numericInput("postDP", "Intended Posterior Probability after a Non-Significant Result", value = 0.3, min = 0, max = 1, step = 0.05),
                         #Kind of statistical test. Can be "t-test", "anova" and "correlation".
                         
-                        selectInput("testP", "Select Statistical Test", c("t-test" = "t-test","anova" = "anova")),
+                        selectInput("testP", "Kind of Test", c("t-test" = "t-test","anova" = "anova")),
                         #Indicate whether it is a "one.sample", or "two.sample" test (for t-test only)
                         
-                        selectInput("typeP", "Within- or between-sample (for t-test)",
+                        selectInput("typeP", "Within- or Between-Sample (for t-test)",
                                     c("within" = "one.sample", "between" = "two.sample")),
                         #Indicate whether the alternative is "two.sided", "less" or "greater"
                         
@@ -170,10 +171,34 @@ ui <- dashboardPage(
                     )
                 )
                 
+        ), 
+        tabItem(tabName = "about",
+                h4("This shiny can be used to justify the alpha level based on the informational 
+                    value of studies."),
+                h4("The Optimize Learning tab calculates the alpha level with the highest overall informational value."),
+                h4("The Posterior|Significance tab allows to supply an intended probability after a significant result. It will return the most informative alpha level under which the intended posterior 
+                    probability after a significant result will still be achieved."),
+                h4("The Posterior|Non-Significance tab  allows to supply the intended probability after a 
+                    non-significant finding and will select the most informative alpha level under
+                    which the intended posterior probability after a non-significant result will still be achieved"),
+                h4("The Probability Based Power Analysis combines the two previous tabs. Fix both the intended posterior probability after a significant result 
+                    as well as a non-significant result and the function will return alpha, power, and 
+                    sample size needed."),
+                h4("The plot on the right shows expected correct change in belief (informational value) as a function of alpha level, a blue line indicates the optimal alpha and the red line the 5% alpha level. "),
+                h4("The most important equations underlying these alpha level justifications are the posterior probability after a significant result:"),
+                withMathJax(h4("$$p(H_1/+) = \\frac{(1-\\beta) \\times p(H_1)}{(1-\\beta) \\times p(H_1) + \\alpha \\times (1-p(H_1))}$$")),
+                h4("the posterior probability after a non-significant result:"),
+                withMathJax(h4("$$p(H_1/-) = \\frac{\\beta \\times p(H_1)}{\\beta \\times p(H_1)+(1-\\alpha) \\times (1-p(H_1))}$$")),
+                h4("and the learning (also informational value or expected correct change in belief) defined as abs(prior-posterior)
+                   weighted by the probability of true positives and true negatives and subtracting false positives and false negatives."),
+                withMathJax(h4("$$\\delta L = p(H_1) \\times (1-\\beta) \\times (p(H_1/+)-p(H_1))+ \\ (1-p(H_1)) \\times (1-\\alpha) \\times (p(H_1)-p(H_1/-)) - $$")),
+                withMathJax(h4("$$\\ (1-p(H_1)) \\times \\alpha \\times (p(H_1/+)- p(H_1))- \\ p(H_1) \\times \\beta \\times (p(H_1)-p(H_1/-))$$")),
+            )   
         )
     )
 )
-)
+
+
 
 #Define server logic to calculate optimal alpha
 server <- function(input, output) {
@@ -213,11 +238,15 @@ server <- function(input, output) {
     output$OptimalAlpha <- renderPlot({ 
         n <- input$n
         effsize <- input$d 
-        prior <- input$prior 
+        prior <- as.numeric(input$prior)
         test = input$test
         type = input$type
         alternative = input$alternative 
         k = input$K
+        if(prior == 0 | prior == 1) {
+            stop("prior cannot be 0 or 1")
+        }
+        print(prior)
         alpha  <- seq(0, 1, .00001) #supply a vector of alphas
         power  <- get_power(alpha, effsize, n, test = test, type = type, alternative = alternative, k = k) # calculate power
         confirm <- postConfirm(power, alpha, prior) #posterior after confirming
@@ -245,11 +274,14 @@ server <- function(input, output) {
     output$Results <- renderText({ 
         n <- input$n
         effsize <- input$d 
-        prior <- input$prior 
+        prior <- as.numeric(input$prior)
         test = input$test
         type = input$type
         alternative = input$alternative 
         k = input$K
+        if(prior == 0 | prior == 1) {
+            stop("prior cannot be 0 or 1")
+        }
         alpha  <- seq(0, 1, .00001) #supply a vector of alphas
         power  <- get_power(alpha, effsize, n, test = test, type = type, alternative = alternative, k = k) # calculate power
         confirm <- postConfirm(power, alpha, prior) #posterior after confirming
@@ -260,11 +292,12 @@ server <- function(input, output) {
         dmax <- as.data.frame(subset(d, info == maxinf)) #return valus with highes correct change in believe
         d05 <- as.data.frame(subset(d, alpha == 0.05)) #compare to 5% alpha
         dmax <- cbind(dmax, d05$info)
+        
         colnames(dmax) <- c("alpha", "power", "Learning", "Learning05")
         if(dmax$alpha > 0.99) stop("Hard to estimate alpha/power with so few participants/small effect size.
                                Consider increasing the sample size")
         paste("The ideal alpha level is ", round(dmax$alpha, digits = 2), " with a power of ", round(dmax$power, digits = 2),
-              " and a Learning of ", round(dmax$Learning, digits = 2), ". This is " ,round(dmax$Learning/dmax$Learning05, digits = 2),
+              " and learning of ", round(dmax$Learning, digits = 2), ". This is " ,round(dmax$Learning/dmax$Learning05, digits = 2),
               " times as much learning as with the conventional alpha level of 0.05 ", sep = "")
     })
     
@@ -279,6 +312,9 @@ server <- function(input, output) {
         type = input$typeC
         alternative = input$alternativeC
         k = input$KC
+        if(prior == 0 | prior == 1) {
+            stop("prior cannot be 0 or 1")
+        }
         if(prior > posttrue) #stop if posterior smaller than prior
         {
             stop("Prior must be smaller than posterior")
@@ -305,7 +341,7 @@ server <- function(input, output) {
         }
         #plot
         plot(alpha,info,
-             ylab = "Expected Change in Belief",
+             ylab = "Expected Correct Change in Belief",
              xlab = "Signifcance Level", type = "l",
              main = paste("Alpha for",posttrue, "Probability after Significance") ,
              xlim = c(0,1), axes = F, ylim =c(0,round(maxinf + 0.005, digits = 2)))
@@ -333,6 +369,9 @@ server <- function(input, output) {
         type = input$typeC
         alternative = input$alternativeC
         k = input$KC
+        if(prior == 0 | prior == 1) {
+            stop("prior cannot be 0 or 1")
+        }
         if(prior > posttrue) #stop if posterior smaller than prior
         {
             stop("Prior must be smaller than posterior")
@@ -379,6 +418,9 @@ server <- function(input, output) {
         type = input$typeD
         alternative = input$alternativeD
         k = input$KD
+        if(prior == 0 | prior == 1) {
+            stop("prior cannot be 0 or 1")
+        }
         if(postfalse > prior)
         {
             stop("Prior must be higher than posterior")
@@ -392,7 +434,7 @@ server <- function(input, output) {
         #f <- max(na.omit(info))
         maxinf <- max(na.omit(info))
         postd <- as.data.frame(subset(df, disconf < postfalse))
-        if (nrow(postd) == 0) stop("You need more participants to enable the intended in probability")
+        if (nrow(postd) == 0) stop("You need more participants to enable the intended probability")
         postd <- max(postd$info)
         d <- subset(df, info == postd)
         if(nrow(d) > 1) {
@@ -402,7 +444,7 @@ server <- function(input, output) {
         }
         #plot
         plot(alpha, info,
-             ylab = "Expected Change in Belief",
+             ylab = "Expected Correct Change in Belief",
              xlab = "Signifcance Level", type = "l",
              main = paste("Alpha for", round(postfalse, digits = 2), "Probability after Non-Significance") ,
              xlim = c(0,1), axes = F,
@@ -430,6 +472,9 @@ server <- function(input, output) {
             type = input$typeD
             alternative = input$alternativeD
             k = input$KD
+            if(prior == 0 | prior == 1) {
+                stop("prior cannot be 0 or 1")
+            }
             if(postfalse > prior)
             {
                 stop("Prior must be higher than posterior")
@@ -443,7 +488,7 @@ server <- function(input, output) {
             #f <- max(na.omit(info))
             maxinf <- max(na.omit(info))
             postd <- as.data.frame(subset(df, disconf < postfalse))
-            if (nrow(postd) == 0) stop("You need more participants to enable the intended in probability")
+            if (nrow(postd) == 0) stop("You need more participants to enable the intended probability")
             postd <- max(postd$info)
             d <- subset(df, info == postd)
             if(nrow(d) > 1) {
@@ -501,7 +546,8 @@ server <- function(input, output) {
                  ylab = "Expected Correct Change in Belief",
                  xlab = "Signifcance Level",
                  type = "l",
-                 main = paste("Probability bas Power Analysis - PosteriorConfirmation:",posttrue, "  Posterior Disconfirmation:", postfalse) ,
+                 main = paste("Probability bas Power Analysis for", posttrue, " probability
+                after significance and" ,postfalse, "after non-significance") ,
                  xlim = c(0, 1),
                  axes = F,
                  ylim = c(0, round(maxinf + 0.005, digits = 2)))
@@ -545,11 +591,11 @@ server <- function(input, output) {
             d <- cbind(d,n)
             colnames(d) <- (c("alpha", "power", "disconf", "confirm", "info", "n"))
             paste("The needed alpha level is ", round(d$alpha, digits = 2), " with a power of ", round(d$power, digits = 2),
-                  " and a required sample is is ", d$n, " participants per group. The actual posterior probabilites are ", round(d$confirm, digits = 2), 
+                  " and a required sample size is is ", d$n, " participants per group. The actual posterior probabilites are ", round(d$confirm, digits = 2), 
                   " after significance and ", round(d$disconf, digits = 2), " after non-significance.", sep = "")
         })   
     }
 
-
+options(shiny.sanitize.errors = FALSE)
 # Run the application 
 shinyApp(ui = ui, server = server)

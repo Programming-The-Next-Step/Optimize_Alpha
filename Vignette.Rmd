@@ -1,0 +1,113 @@
+---
+title: "Optimize Alpha"
+output: 
+    html_document:
+        toc: true
+        theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This package can be used to justify the alpha level based on the informational 
+value of studies. The basic idea is that of a Bayesian Robot who only knows the 
+alpha level, power, and whether a result was significant or not and tries to adjust
+alpha and power in a way that optimizes the change in belief. The equations this is based on can be found at the end of the document. 
+
+
+## idealAlpha
+
+This function calculates the alpha level with the highest overall informational value.
+
+```{r, echo = F}
+#set working directory accordingly
+source("main.R")
+```
+
+```{r, message = F, warnings = F}
+#calculate best alpha level for independent sample t-test with 20 participants
+#per group, expected d of 0.5 and prior of 0.5.
+idealAlpha(20, 0.5, 0.5)
+```
+The most informative alpha level, the power, and the expected correct change in 
+belief are returned. The expected correct change in belief is defined as subtracting
+the probability-weighted updating after a false positive or false negative from the
+weighted updating after a true positive or true negative. 
+
+In addition, a plot shows informational value as a function of alpha level, a blue 
+line indicates the optimal alpha and the red line the 5% alpha
+level. 
+
+## alphaConfirmation
+
+This function allows to supply an intended probability after a significant result. 
+It will select the most informative alpha level under which the intended posterior 
+probability after a significant result will still be achieved. 
+
+```{r, message = F, warnings = F}
+#calculate the alpha level needed for a four group anova with cohens f = 0.4,
+#ten participants per group, a prior of 0.5 and an intended posterior probability of 0.95
+alphaConfirmation(20, 0.4, 0.5, 0.95, test = "anova")
+```
+
+
+## alphaDisconfirmation
+
+This function works similar to alphaConfirmation but targets false negatives. 
+In other words, it allows to supply the intended probability after a 
+non-significant finding and will select the most informative alpha level under
+which the intended posterior probability after a non-significant result will still be achieved. 
+
+```{r, message = F, warnings = F}
+#Caluclate the alpha level needed for a one sided within subjects t-test, with 40 participants, 
+#d = 0.5, prior of 0.5 and intended posterior probability of 0.1 after a non-significant result. 
+alphaDisconfirmation(40, 0.3, 0.5, 0.1, type = "one.sample", alternative = "greater")
+```
+
+## probPower
+
+Combines alphaConfirmation and alphaDisconfirmation to a probability based power
+analysis. Fix both the intended posterior probability after a significant result 
+as well as a non-significant result, the function will return alpha, power and 
+sample size needed to achieve this. 
+
+```{r, message = F, warnings = F}
+#calculate the alpha, power and sample size needed to achieve 20% posterior probability after a non significant result and 95% posterior probability after a significant result with a prior of 0.5 and an effect size of 0.2 for between samples t-test. 
+probPower(0.2, 0.5, 0.2, 0.95)
+```
+
+## postConfirm and postDisconfirm
+
+PostConfirm calculates the posterior probability after a significant result for a given alpha, power, and prior and postDisconfirm calculates the posterior probability after a non-significant result for a given power, alpha, and prior. 
+
+```{r, message = F, warnings = F}
+#calculate posterior probability after significant and non-significant results for alpha = 0.05, power = 0.8, and prior = 0.5
+postConfirm(0.8, 0.05, 0.5)
+postDisconfirm(0.8, 0.05, 0.5)
+```
+
+## Equations
+
+We can calculate the posterior probability after a significant result using Bayes rule as:
+
+\begin{equation}
+p(H_1/+) = \frac{(1-\beta) \times p(H_1)}{(1-\beta) \times p(H_1)+ \alpha \times (1-p(H_1))}
+\label{eq:confirmation}
+\end{equation}
+
+and for a non-significant result as: 
+
+\begin{equation}
+p(H_1/-) = \frac{\beta \times p(H_1)}{\beta \times p(H_1)+(1-\alpha) \times (1-p(H_1))}
+\label{eq:disconfirmation}
+\end{equation}
+
+Combining the two, the expected correct change in belief for the idealAlpha function can be calculated as follows:
+
+\begin{equation}
+\label{eq:L}
+\begin{aligned}
+\delta L = p(H_1) \times (1-\beta) \times (p(H_1/+)-p(H_1))+ \\ (1-p(H_1)) \times (1-\alpha) \times (p(H_1)-p(H_1/-)) - \\ (1-p(H_1)) \times \alpha \times (p(H_1/+)- p(H_1))- \\ p(H_1) \times \beta \times (p(H_1)-p(H_1/-))
+\end{aligned}
+\end{equation}

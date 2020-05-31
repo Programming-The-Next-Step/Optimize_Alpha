@@ -5,8 +5,8 @@ account: maxma1er
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2358870
-bundleId: 3191747
+bundleId: 3210696
 url: https://maxma1er.shinyapps.io/OptimizeAlpha/
-when: 1590509507.88227
+when: 1590929998.46012
 asMultiple: FALSE
 asStatic: FALSE
