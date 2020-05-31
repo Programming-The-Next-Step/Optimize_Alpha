@@ -1,5 +1,11 @@
 library(OptimizeR)
-
+#please note that the tests are intended to fail in some situations.
+#These are when the alpha level that marginally indicates the intended posterior
+#probability is higher/lower than the intended posterior probability
+#then the code will default to the most informative alpha level (for more information
+#the package documentation or the vignette)
+#In addition, ProbPower might result in higher/lower posterior probabilites than intended
+#for high effect size since participants can minimum be added one at a time.
 
 context("Core OptimizeR functionality")
 
